@@ -1,4 +1,4 @@
-require("./config/dotenv.config"); // Load environment variables
+require("./config/dotenv.config");
 const express = require("express");
 const connectDB = require("./config/db");
 const cors = require("cors");
@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const rateLimit = require("./middleware/rateLimit");
 const { errorHandler } = require("./middleware/errorHandler");
 const userRoutes = require("./routes/userRoutes");
+const logger = require("./utils/logger");
 
 const app = express();
 
@@ -14,18 +15,23 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(express.json()); // Body parser
-app.use(cors()); // Enable Cross-Origin Resource Sharing
-app.use(helmet()); // Security headers
-app.use(morgan("dev")); // Request logging
-app.use(rateLimit); // Rate limiter
+app.use(express.json());
+app.use(cors());
+app.use(helmet());
+app.use(morgan("dev"));
+app.use(rateLimit);
 
 // Routes
 app.use("/api/users", userRoutes);
+
+// Simulated Critical Error for Testing
+app.get("/test-error", (req, res) => {
+  throw new Error("Simulated Critical Error: Database Connection Failed");
+});
 
 // Error Handling Middleware
 app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, () => logger.info(`🚀 Server running on port ${PORT}`));
