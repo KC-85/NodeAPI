@@ -1,0 +1,23 @@
+{
+  "name": "nodeapi",
+  "version": "1.0.0",
+  "description": "Building an API in node.js for General Purpose Use",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KC-85/NodeAPI.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/KC-85/NodeAPI/issues"
+  },
+  "homepage": "https://github.com/KC-85/NodeAPI#readme",
+  "dependencies": {
+    "node-modules": "^0.0.1"
+  }
+}
