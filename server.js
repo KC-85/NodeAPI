@@ -6,6 +6,7 @@ const helmet = require("helmet");
 const morgan = require("morgan");
 const rateLimit = require("./middleware/rateLimit");
 const { errorHandler } = require("./middleware/errorHandler");
+const userRoutes = require("./routes/userRoutes");
 
 const app = express();
 
@@ -19,10 +20,8 @@ app.use(helmet()); // Security headers
 app.use(morgan("dev")); // Request logging
 app.use(rateLimit); // Rate limiter
 
-// Sample Route
-app.get("/", (req, res) => {
-  res.send("🚀 API is running securely!");
-});
+// Routes
+app.use("/api/users", userRoutes);
 
 // Error Handling Middleware
 app.use(errorHandler);
