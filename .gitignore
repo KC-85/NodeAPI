@@ -20,3 +20,6 @@ Thumbs.db
 
 # WSL-related files
 .wslconfig
+
+# Ignore Grafana installation file
+grafana_*.deb
