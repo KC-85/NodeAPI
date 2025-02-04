@@ -1,6 +1,11 @@
-require("./config/dotenv.config"); // Load .env variables
+require("./config/dotenv.config"); // Load environment variables
 const express = require("express");
 const connectDB = require("./config/db");
+const cors = require("cors");
+const helmet = require("helmet");
+const morgan = require("morgan");
+const rateLimit = require("./middleware/rateLimit");
+const { errorHandler } = require("./middleware/errorHandler");
 
 const app = express();
 
@@ -8,12 +13,19 @@ const app = express();
 connectDB();
 
 // Middleware
-app.use(express.json());
+app.use(express.json()); // Body parser
+app.use(cors()); // Enable Cross-Origin Resource Sharing
+app.use(helmet()); // Security headers
+app.use(morgan("dev")); // Request logging
+app.use(rateLimit); // Rate limiter
 
-// Simple Route
+// Sample Route
 app.get("/", (req, res) => {
-  res.send("API is running...");
+  res.send("🚀 API is running securely!");
 });
+
+// Error Handling Middleware
+app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
