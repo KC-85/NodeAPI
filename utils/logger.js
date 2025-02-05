@@ -1,8 +1,7 @@
 const { createLogger, format, transports } = require("winston");
 require("winston-mongodb");
 const mongoose = require("mongoose");
-const { sendErrorEmail } = require("../utils/emailAlert");
-const { sendErrorSMS } = require("../utils/smsAlert");
+const { sendErrorEmail } = require("../utils/emailAlert"); // Keep Email Alerts
 
 const logFormat = format.combine(
   format.timestamp({ format: "YYYY-MM-DD HH:mm:ss" }),
@@ -28,11 +27,11 @@ const logger = createLogger({
   ],
 });
 
-// Detect Critical Errors & Send Alerts
 logger.on("data", (log) => {
+  console.log(`🔍 LOG EVENT DETECTED: Level=${log.level}, Message=${log.message}`); // Debugging log
   if (log.level === "error") {
+    console.log("🚨 Sending Email Alert...");
     sendErrorEmail(log.message);
-    sendErrorSMS(log.message);
   }
 });
 

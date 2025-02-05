@@ -25,11 +25,13 @@ app.use(rateLimit);
 app.use("/api/users", userRoutes);
 
 // Simulated Critical Error for Testing
-app.get("/test-error", (req, res) => {
-  throw new Error("Simulated Critical Error: Database Connection Failed");
+app.get("/test-error", (req, res, next) => {
+  const errorMessage = "Simulated Critical Error: Database Connection Failed";
+  logger.error(errorMessage); // Log it with Winston
+  next(new Error(errorMessage)); // Pass it to error handler
 });
 
-// Error Handling Middleware
+// Error Handling Middleware (Must Be Placed After Routes)
 app.use(errorHandler);
 
 // Start Server
