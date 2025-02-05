@@ -34,4 +34,4 @@ app.use(errorHandler);
 
 // Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => logger.info(`🚀 Server running on port ${PORT}`));
+app.listen(PORT, "0.0.0.0", () => logger.info(`🚀 Server running on port ${PORT}`));
