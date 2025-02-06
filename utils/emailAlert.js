@@ -1,38 +1,66 @@
 const nodemailer = require("nodemailer");
 require("dotenv").config();
 
-// Yahoo SMTP Configuration
-const transporter = nodemailer.createTransport({
-  host: "smtp.mail.yahoo.com",
-  port: 465, // Secure SMTP port
-  secure: true, // Use TLS encryption
-  auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS,
-  },
-  logger: true,   // Enable SMTP logs
-  debug: true,    // Enable detailed debugging output
-});
+// Function to determine the SMTP provider based on the recipient email domain
+const getSMTPConfig = (recipientEmail) => {
+  const domain = recipientEmail.split("@")[1];
 
-// Function to Send an Email Alert
-const sendErrorEmail = async (errorMessage) => {
-  const mailOptions = {
-    from: `"CatAlert" <${process.env.EMAIL_USER}>`,
-    to: process.env.ALERT_EMAIL, // Hotmail or any other email
-    subject: "🚨 Albi",
-    text: `Albi says meow then gets a bit bitey:\n\n${errorMessage}`,
-  };
+  if (domain.includes("gmail.com")) {
+    return {
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.GMAIL_USER,
+        pass: process.env.GMAIL_PASS,
+      },
+    };
+  } else if (domain.includes("yahoo.com")) {
+    return {
+      host: "smtp.mail.yahoo.com",
+      port: 465,
+      secure: true,
+      auth: {
+        user: process.env.YAHOO_USER,
+        pass: process.env.YAHOO_PASS,
+      },
+    };
+  } else if (domain.includes("hotmail.com") || domain.includes("outlook.com") || domain.includes("live.com")) {
+    return {
+      host: "smtp.office365.com",
+      port: 587,
+      secure: false,
+      auth: {
+        user: process.env.OUTLOOK_USER,
+        pass: process.env.OUTLOOK_PASS,
+      },
+    };
+  } else {
+    throw new Error(`Unsupported email domain: ${domain}`);
+  }
+};
 
+// Function to send email alert
+const sendErrorEmail = async (recipientEmail, errorMessage) => {
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("✅ Albi mail sent successfully!");
-  } catch (error) {
-    console.error("❌ Error sending email:", error);
+    const smtpConfig = getSMTPConfig(recipientEmail);
+    const transporter = nodemailer.createTransport({
+      ...smtpConfig,
+      logger: true,   // Enable SMTP logs
+      debug: true,    // Enable detailed debugging output
+    });
 
-    // Log more details if there's an SMTP issue
-    if (error.response) {
-      console.error("🔍 SMTP Response:", error.response);
-    }
+    const mailOptions = {
+      from: `"Albi Alert" <${smtpConfig.auth.user}>`,
+      to: recipientEmail,
+      subject: "🚨 Occasionally bitey cat detected",
+      text: `Albi says meow and purrs then a little bitey:\n\n${errorMessage}`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    console.log(`✅ Albi Email Sent Successfully to ${recipientEmail}`);
+  } catch (error) {
+    console.error(`❌ Error sending email to ${recipientEmail}:`, error);
   }
 };
 
